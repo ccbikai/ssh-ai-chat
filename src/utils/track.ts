@@ -28,7 +28,7 @@ export async function track(params: TrackParams, data?: TrackData): Promise<Resp
       payload: {
         hostname: env.SERVER_NAME,
         language: params.locale?.replaceAll('_', '-'),
-        referrer: `https://${params.username}.${env.SERVER_NAME}/`,
+        referrer: `https://${params.username}.github.io`,
         screen: `${params.columns ?? 0}x${params.rows ?? 0}`,
         url: params.path,
         website: env.UMAMI_SITE_ID,
