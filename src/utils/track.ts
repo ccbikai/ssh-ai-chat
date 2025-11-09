@@ -1,6 +1,7 @@
 import { joinURL } from 'ufo'
 import env from '@/config/env'
 import logger from '@/utils/logger'
+import { name, version } from '../../package.json'
 
 interface TrackParams {
   path?: string
@@ -43,7 +44,7 @@ export async function track(params: TrackParams, data?: TrackData): Promise<Resp
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', // Mock User-Agent
+        'User-Agent': `${name}/${version} (${params.locale})`, // Mock User-Agent
       },
       body,
     })
