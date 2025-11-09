@@ -10,7 +10,7 @@ const config: NodeJS.ProcessEnv = {
   ...env,
   HOST: env.SSH_HOST ?? env.HOST ?? '0.0.0.0',
   PORT: env.SSH_PORT ?? env.PORT ?? '2222',
-  SERVER_NAME: env.SERVER_NAME ?? 'chat.aigc.ing',
+  SERVER_NAME: env.SERVER_NAME ?? 'chat.agi.li',
   AI_MODEL_REASONING_MODELS: env.AI_MODEL_REASONING_MODELS ?? '',
 }
 

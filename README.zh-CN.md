@@ -12,7 +12,7 @@
 
 ```sh
 # 替换 username 为你的 GitHub 用户名
-ssh username@chat.aigc.ing
+ssh username@chat.agi.li
 ```
 
 ### 支持的终端
@@ -56,7 +56,7 @@ services:
 
 ```env
 # 服务名称，非必选，可换成自己的域名
-SERVER_NAME=chat.aigc.ing
+SERVER_NAME=chat.agi.li
 
 # 是否是公开服务器，必选，不配置则为私有服务器，需要配置白名单
 PUBLIC_SERVER=false
