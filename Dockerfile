@@ -1,4 +1,4 @@
-FROM node:20-slim AS base
+FROM node:22-slim AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -21,7 +21,7 @@ RUN pnpm run build
 ## PROD must be minimal ###
 ###########################
 
-FROM gcr.io/distroless/nodejs20-debian12 AS prod
+FROM gcr.io/distroless/nodejs22-debian12 AS prod
 COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=build /app/drizzle /app/drizzle
 COPY --from=build /app/dist /app/dist
