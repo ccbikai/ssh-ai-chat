@@ -1,11 +1,12 @@
 import type { ChatMessage } from '@/types/chat'
-import { extractReasoningMiddleware, generateText, streamText, wrapLanguageModel } from 'ai'
+import { extractReasoningMiddleware, generateText, stepCountIs, streamText, wrapLanguageModel } from 'ai'
 import { throttle } from 'es-toolkit'
 import { useInput } from 'ink'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { uuidv7 } from 'uuidv7'
 import { models } from '@/ai'
 import { AI_MODEL_CONFIG, AI_MODEL_LIST } from '@/ai/config'
+import { getMCPTools } from '@/ai/mcp'
 import env from '@/config/env'
 import { useGlobal } from '@/context/global'
 import { createOrUpdateConversation, getConversationList } from '@/db/conversations'
@@ -130,15 +131,21 @@ export function useChat() {
     setMessages(prev => [...prev, userMessage, assistantMessage])
 
     try {
+      track(Object.assign({ event: 'chat', path, locale }, user), { model: model.name })
+
       const thinkingModel = env.AI_MODEL_REASONING_MODELS?.split(',')
 
-      track(Object.assign({ event: 'chat', path, locale }, user), { model: model.name })
+      const { mcpClients, tools } = await getMCPTools()
+
+      // logger.debug(tools, 'Available tools from MCP servers')
 
       cancelChatRef.current = new AbortController()
       const { textStream } = streamText({
         abortSignal: cancelChatRef.current.signal,
         system: generateChatPrompt(locale, model.name),
         messages: [...messages, userMessage],
+        tools,
+        stopWhen: stepCountIs(20),
         model: thinkingModel.includes(model.name)
           ? wrapLanguageModel({
               model: models[model.name].chat(model.id),
@@ -159,6 +166,13 @@ export function useChat() {
             usage,
             finishReason,
           }, `request LLM(${model.name}) result`)
+          await Promise.all(
+            mcpClients.map(async (client) => {
+              client.close().catch((error) => {
+                logger.error({ error: error instanceof Error ? error.message : error }, 'MCP client close failed')
+              })
+            }),
+          )
           await kv.set(rateLimitKey, rateLimitTimes + 1, 'EX', kvConfig.rateLimit.ttl)
         },
       })
