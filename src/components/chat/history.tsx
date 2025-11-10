@@ -2,7 +2,7 @@ import type { BoxProps } from 'ink'
 import type { ChatMessage } from '@/types/chat'
 import { Box, measureElement, Text, useFocus } from 'ink'
 import SelectInput from 'ink-select-input'
-import { useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useChatContext } from '@/context/chat'
 import { useGlobal } from '@/context/global'
 import { getConversation } from '@/db/conversations'
@@ -20,7 +20,7 @@ export default function History({ ...props }: BoxProps) {
   const { isFocused } = useFocus({
     id: 'history',
   })
-  const { user, locale } = useGlobal()
+  const { user, locale, dimensions } = useGlobal()
   const { conversations, setMessages, conversationId, setConversationId } = useChatContext()
 
   const selectConversation = async (conversation: { value: string }) => {
@@ -41,7 +41,23 @@ export default function History({ ...props }: BoxProps) {
   }
 
   const historyRef = useRef(null)
-  const { height } = historyRef.current ? measureElement(historyRef.current) : {}
+  const [historyHeight, setHistoryHeight] = useState(0)
+
+  useLayoutEffect(() => {
+    if (!historyRef.current) {
+      return
+    }
+    const { height = 0 } = measureElement(historyRef.current) || {}
+    const timeout = setTimeout(() => {
+      setHistoryHeight(height)
+    }, 0)
+
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [dimensions])
+
+  const historyListLimit = Math.max(historyHeight - 2, 1)
 
   return (
     <Box ref={historyRef} {...props} paddingX={1} flexDirection="column" overflow="hidden">
@@ -51,7 +67,7 @@ export default function History({ ...props }: BoxProps) {
       <SelectInput
         items={conversations}
         isFocused={isFocused}
-        limit={height - 2}
+        limit={historyListLimit}
         itemComponent={HistoryItem}
         onHighlight={selectConversation}
       />

@@ -1,6 +1,6 @@
 import type { BoxProps } from 'ink'
 import { Box, measureElement, useInput, useStdout } from 'ink'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 interface ScrollerProps extends BoxProps {
   children: React.ReactNode
@@ -58,9 +58,15 @@ export default function Scroller({ children, ...props }: ScrollerProps) {
     }
   }, [stdout, scrollToEnd])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // logger.debug({ pv: props.version, version: versionRef.current }, 'scroller version')
-    scrollToEnd()
+    const timeout = setTimeout(() => {
+      scrollToEnd()
+    }, 0)
+
+    return () => {
+      clearTimeout(timeout)
+    }
   }, [children, props.version, scrollToEnd])
 
   useInput((input, key) => {

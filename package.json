@@ -8,7 +8,7 @@
   "main": "./dist/index.ts",
   "module": "./dist/index.ts",
   "engines": {
-    "node": ">=20.11"
+    "node": ">=22"
   },
   "scripts": {
     "postinstall": "(test -d .git && simple-git-hooks && npm run -s i18n:compile) || true",

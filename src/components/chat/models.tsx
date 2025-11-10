@@ -1,7 +1,7 @@
 import type { BoxProps } from 'ink'
 import { Box, measureElement, Text, useFocus, useInput } from 'ink'
 import SelectInput from 'ink-select-input'
-import { useMemo, useRef } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { AI_MODEL_CONFIG, AI_MODEL_LIST } from '@/ai/config'
 import { useChatContext } from '@/context/chat'
 import { useGlobal } from '@/context/global'
@@ -10,7 +10,7 @@ import { m } from '@/i18n/messages.js'
 const selectModelShortcuts = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']
 
 export default function Models({ ...props }: BoxProps) {
-  const { locale, isInputFocused } = useGlobal()
+  const { locale, isInputFocused, dimensions } = useGlobal()
   const { model, setModel } = useChatContext()
   const { isFocused } = useFocus({
     id: 'models',
@@ -51,7 +51,23 @@ export default function Models({ ...props }: BoxProps) {
   })), [])
 
   const modelsRef = useRef(null)
-  const { height } = modelsRef.current ? measureElement(modelsRef.current) : {}
+  const [modelsHeight, setModelsHeight] = useState(0)
+
+  useLayoutEffect(() => {
+    if (!modelsRef.current) {
+      return
+    }
+    const { height = 0 } = measureElement(modelsRef.current) || {}
+    const timeout = setTimeout(() => {
+      setModelsHeight(height)
+    }, 0)
+
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [dimensions])
+
+  const modelsListLimit = Math.max(modelsHeight, 1)
 
   return (
     <Box ref={modelsRef} {...props} paddingX={1} flexDirection="column" overflow="hidden">
@@ -63,7 +79,7 @@ export default function Models({ ...props }: BoxProps) {
         items={models}
         initialIndex={initialIndex}
         isFocused={isFocused}
-        limit={height}
+        limit={modelsListLimit}
         onHighlight={selectNewModel}
       />
     </Box>

@@ -33,7 +33,7 @@ function App({ user = {}, env = {} }: { user?: User, env?: Env }) {
     id: inputId,
   })
 
-  const [path, setPath] = useState('/')
+  const [path, setPath] = useState('/chat')
   const [currentLocale, setCurrentLocale] = useState<Locale>(locales.includes(userLocale) ? userLocale : locales[0])
   const [dimensions, setDimensions] = useState(() => ({
     columns: stdout.columns,
@@ -44,7 +44,7 @@ function App({ user = {}, env = {} }: { user?: User, env?: Env }) {
     focus(inputId)
   }, [focus])
 
-  const navigate = useCallback((newPath: string) => {
+  const navigate = (newPath: string) => {
     if (path === newPath) {
       return
     }
@@ -57,7 +57,7 @@ function App({ user = {}, env = {} }: { user?: User, env?: Env }) {
       columns: dimensions.columns,
       rows: dimensions.rows,
     })
-  }, [path, currentLocale, user, dimensions])
+  }
 
   useInput((input, key) => {
     // logger.debug({
@@ -88,14 +88,10 @@ function App({ user = {}, env = {} }: { user?: User, env?: Env }) {
   })
 
   useEffect(() => {
-    if (path === '/') {
-      navigate('/chat')
-    }
-
     if (path === '/chat') {
       focusInput()
     }
-  }, [path, focusInput, navigate])
+  }, [path, focusInput])
 
   useLayoutEffect(() => {
     stdout.write(cursorHide)
