@@ -7,4 +7,5 @@ export default defineConfig({
   ],
   minify: true,
   unbundle: true,
+  fixedExtension: false,
 })

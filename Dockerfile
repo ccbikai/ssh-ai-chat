@@ -35,4 +35,4 @@ ENV FORCE_COLOR=2
 VOLUME /app/data
 EXPOSE 2222
 
-CMD [ "/app/dist/index.mjs" ]
+CMD [ "/app/dist/index.js" ]
