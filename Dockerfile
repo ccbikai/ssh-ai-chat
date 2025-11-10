@@ -1,5 +1,8 @@
 FROM node:22-slim AS base
 
+ENV CI=true
+ENV SKIP_INSTALL_SIMPLE_GIT_HOOKS=true
+
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
@@ -32,4 +35,4 @@ ENV FORCE_COLOR=2
 VOLUME /app/data
 EXPOSE 2222
 
-CMD [ "/app/dist/index.js" ]
+CMD [ "/app/dist/index.mjs" ]
